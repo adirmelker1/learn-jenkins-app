@@ -2,17 +2,23 @@ pipeline {
     agent any
 
     stages {
-        stage('Hello') {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                echo 'Hello World - ADIR MELKER'
-                sh 'docker --version'
-                echo 'uname -a || echo "Not a Linux/Mac system"'
-                sh 'uname -a || ec ho "Not a Linux/Mac system"'
-                sh 'ls -la'
-                sh 'touch text.txt'
-                sh 'echo "test this shit"'
-                echo 'test this shit'
-                echo 'hekko adir'
+                sh """
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                """
+
             }
         }
     }

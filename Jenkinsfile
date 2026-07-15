@@ -1,44 +1,23 @@
 pipeline {
     agent any
 
-    stages
-    {
-        stage('Build')
-        {
-            steps
-            {
-                sh """
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
-                """
-
-            }
-        }
-        stage('Test')
-        {
-            steps
-            {
-                sh '''
-                    echo 'Test Stage'
-                    // test -f build/index.html
-                    // npm test
-                '''
-            }
-
-
-           }
+    triggers {
+        // מאפשר לג'נקינס להירשם לטריגר של ה-GitHub Webhook
+        githubPush()
     }
 
-    post
-    {
-        always
-        {
-            junit 'test-results/junit.xml'
+    stages {
+        stage('Checkout') {
+            steps {
+                // הגדרת משיכת הקוד - ספציפית מענף main בצורה פשוטה ונקייה
+                git branch: 'main', url: 'https://github.com/adirmelker1/learn-jenkins-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building and deploying from main branch...'
+            }
         }
     }
-
 }

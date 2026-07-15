@@ -9,8 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // שימוש ב-checkout scm מאפשר לג'נקינס למשוך אוטומטית
-                // את הענף הספציפי שהפעיל את הטריגר (כולל ענפי פיצ'ר ב-PR)
+                // משיכת הקוד מהענף שהפעיל את הטריגר
                 checkout scm
             }
         }
@@ -25,12 +24,21 @@ pipeline {
     }
 
     post {
-    success {
-        // במקום githubNotify
-        setGitHubPullRequestStatus(state: 'SUCCESS', message: 'The build passed!')
+        success {
+            // מעדכן את סטטוס הקומיט ב-GitHub כ-Success
+            step([$class: 'GitHubCommitStatusSetter',
+                  reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/adirmelker1/learn-jenkins-app.git'],
+                  contextSource: [$class: 'DefaultCommitContextSource', context: 'continuous-integration/jenkins'],
+                  statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'BetterThanOrEqualBuildResult', result: 'SUCCESS', state: 'SUCCESS', message: 'The build passed!']]]
+            ])
+        }
+        failure {
+            // מעדכן את סטטוס הקומיט ב-GitHub כ-Failure
+            step([$class: 'GitHubCommitStatusSetter',
+                  reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/adirmelker1/learn-jenkins-app.git'],
+                  contextSource: [$class: 'DefaultCommitContextSource', context: 'continuous-integration/jenkins'],
+                  statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'BetterThanOrEqualBuildResult', result: 'FAILURE', state: 'FAILURE', message: 'The build failed!']]]
+            ])
+        }
     }
-    failure {
-        setGitHubPullRequestStatus(state: 'FAILURE', message: 'The build failed!')
-    }
-}
 }

@@ -25,15 +25,12 @@ pipeline {
     }
 
     post {
-        success {
-            // מעדכן את ה-Commit ב-GitHub שהבדיקה עברה בהצלחה
-            // זה ישחרר את החסימה ב-PR!
-            githubNotify status: 'SUCCESS', context: 'Jenkins Pipeline'
-        }
-        failure {
-            // מעדכן את ה-Commit ב-GitHub שהבדיקה נכשלה
-            // זה ישאיר את ה-PR חסום למיזוג!
-            githubNotify status: 'FAILURE', context: 'Jenkins Pipeline'
-        }
+    success {
+        // במקום githubNotify
+        setGitHubPullRequestStatus(state: 'SUCCESS', message: 'The build passed!')
     }
+    failure {
+        setGitHubPullRequestStatus(state: 'FAILURE', message: 'The build failed!')
+    }
+}
 }

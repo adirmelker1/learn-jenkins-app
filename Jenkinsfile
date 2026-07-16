@@ -28,7 +28,7 @@ pipeline {
             // מעדכן את סטטוס הקומיט ב-GitHub כ-Success
             step([$class: 'GitHubCommitStatusSetter',
                   reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/adirmelker1/learn-jenkins-app.git'],
-                  contextSource: [$class: 'DefaultCommitContextSource', context: 'continuous-integration/jenkins'],
+                  contextSource: [$class: 'DefaultCommitContextSource', context: 'test-pipeline'],
                   statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'BetterThanOrEqualBuildResult', result: 'SUCCESS', state: 'SUCCESS', message: 'The build passed!']]]
             ])
         }
@@ -36,7 +36,7 @@ pipeline {
             // מעדכן את סטטוס הקומיט ב-GitHub כ-Failure
             step([$class: 'GitHubCommitStatusSetter',
                   reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/adirmelker1/learn-jenkins-app.git'],
-                  contextSource: [$class: 'DefaultCommitContextSource', context: 'continuous-integration/jenkins'],
+                  contextSource: [$class: 'DefaultCommitContextSource', context: 'test-pipeline'],
                   statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'BetterThanOrEqualBuildResult', result: 'FAILURE', state: 'FAILURE', message: 'The build failed!']]]
             ])
         }

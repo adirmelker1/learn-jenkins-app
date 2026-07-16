@@ -22,7 +22,7 @@ pipeline {
         {
             steps
             {
-                sh 'npm install'
+                sh 'npm ci'
                 echo 'sh npm lint'
                 sh 'npm run lint'
             }

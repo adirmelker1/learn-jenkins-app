@@ -14,6 +14,15 @@ pipeline {
             }
         }
 
+        stage('Lint & Format')
+        {
+            steps
+            {
+                echo 'sh npm lint'
+                sh 'npm rum lint'
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Building and testing...'

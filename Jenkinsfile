@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node-20'
+    }
+
     triggers {
         // מאפשר לג'נקינס להתעורר משינויים ופתיחת PR-ים ב-GitHub
         githubPush()

@@ -18,8 +18,9 @@ pipeline {
         {
             steps
             {
+                sh 'npm install'
                 echo 'sh npm lint'
-                sh 'npm rum lint'
+                sh 'npm run lint'
             }
         }
 

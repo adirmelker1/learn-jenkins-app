@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node-20'
+    }
+
     triggers {
         // מאפשר לג'נקינס להתעורר משינויים ופתיחת PR-ים ב-GitHub
         githubPush()
@@ -11,6 +15,16 @@ pipeline {
             steps {
                 // משיכת הקוד מהענף שהפעיל את הטריגר
                 checkout scm
+            }
+        }
+
+        stage('Lint & Format')
+        {
+            steps
+            {
+                sh 'npm ci --legacy-peer-deps'
+                echo 'sh npm lint'
+                sh 'npm run lint'
             }
         }
 

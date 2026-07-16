@@ -22,7 +22,7 @@ pipeline {
         {
             steps
             {
-                sh 'npm ci'
+                sh 'npm ci --legacy-peer-deps'
                 echo 'sh npm lint'
                 sh 'npm run lint'
             }

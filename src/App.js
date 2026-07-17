@@ -2,8 +2,6 @@ import logo from "./logo.svg";
 import "./App.css";
 
 function App() {
-  const backendApi = "192.168.1.50";
-  console.log("Connecting to backend at: " + backendApi);
   return (
     <div className="App">
       <header className="App-header">

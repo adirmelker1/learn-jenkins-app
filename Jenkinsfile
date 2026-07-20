@@ -21,7 +21,7 @@ pipeline {
         stage('Lint & Format') {
             steps {
                 sh 'npm ci --legacy-peer-deps'
-                echo 'sh npm lint'
+                echo 'sh npm run lint'
                 sh 'npm run lint'
             }
         }
@@ -61,9 +61,17 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Building and testing...'
-                // כאן תריץ את הבדיקות שלך, למשל:
-                // sh 'npm install && npm test'
+                echo 'npm run build...'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Test')
+        {
+            steps
+            {
+                echo 'npm run test...'
+                sh 'CI=true npm test'
             }
         }
     } // סגירת stages

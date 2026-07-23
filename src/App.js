@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 
 function App() {
+  fetch("http://192.168.1.1/api/data");
   return (
     <div className="App">
       <header className="App-header">
@@ -11,7 +12,6 @@ function App() {
           href="https://example.com"
           target="_blank"
           rel="noopener noreferrer"
-          ip_address="192.88.1.1"
         >
           Learn Jenkins on Udemy KING
         </a>

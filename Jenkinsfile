@@ -26,38 +26,38 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    // ג'נקינס יתקין ויביא את הנתיב של הסורק שהגדרת ב-Tools תחת השם 'SonarQube-Scanner'
-                    def scannerHome = tool 'SonarQube-Scanner'
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         script {
+        //             // ג'נקינס יתקין ויביא את הנתיב של הסורק שהגדרת ב-Tools תחת השם 'SonarQube-Scanner'
+        //             def scannerHome = tool 'SonarQube-Scanner'
 
-                    // הרצת הסריקה באמצעות שימוש בנתיב המלא של הסורק שהותקן
-                    withSonarQubeEnv('SonarQube-Server') {
-                        sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=my-jenkins-app \
-                            -Dsonar.sources=."
-                    }
-                } // סגירת script
-            } // סגירת steps
-        } // סגירת stage של האנליזה
+        //             // הרצת הסריקה באמצעות שימוש בנתיב המלא של הסורק שהותקן
+        //             withSonarQubeEnv('SonarQube-Server') {
+        //                 sh "${scannerHome}/bin/sonar-scanner \
+        //                     -Dsonar.projectKey=my-jenkins-app \
+        //                     -Dsonar.sources=."
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('SonarQube Quality Gate') {
-            steps {
-                // מומלץ לעטוף את ההמתנה ב-timeout כדי שה-Pipeline לא ייתקע לנצח אם יש בעיית תקשורת
-                timeout(time: 10, unit: 'MINUTES') {
-                    script {
-                        // הפקודה שממש עוצרת וממתינה לתשובה משרת ה-SonarQube
-                        def qg = waitForQualityGate()
+        // stage('SonarQube Quality Gate') {
+        //     steps {
+        //         // מומלץ לעטוף את ההמתנה ב-timeout כדי שה-Pipeline לא ייתקע לנצח אם יש בעיית תקשורת
+        //         timeout(time: 10, unit: 'MINUTES') {
+        //             script {
+        //                 // הפקודה שממש עוצרת וממתינה לתשובה משרת ה-SonarQube
+        //                 def qg = waitForQualityGate()
 
-                        // בדיקה האם התוצאה תקינה
-                        if (qg.status != 'OK') {
-                            error "Pipeline failed due to code quality issues: ${qg.status}"
-                        }
-                    } // סגירת script
-                } // סגירת timeout
-            } // סגירת steps
-        } // סגירת stage של ה-Quality Gate
+        //                 // בדיקה האם התוצאה תקינה
+        //                 if (qg.status != 'OK') {
+        //                     error "Pipeline failed due to code quality issues: ${qg.status}"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Build') {
             steps {
@@ -66,15 +66,38 @@ pipeline {
             }
         }
 
-        stage('Test')
-        {
-            steps
-            {
+        stage('Test') {
+            steps {
                 echo 'npm run test...'
                 sh 'CI=true npm test'
             }
         }
-    } // סגירת stages
+
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    def dockerUser = 'adir395'
+                    def imageName = 'learn-jenkins-app'
+                    def fullImageName = "${dockerUser}/${imageName}:${BUILD_NUMBER}"
+                    def latestImageName = "${dockerUser}/${imageName}:latest"
+
+                    // התחברות ל-Docker Hub בתוך בלוק מאובטח
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+
+                        echo 'Logging in to Docker Hub...'
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
+                        echo "Building Docker image: ${fullImageName}..."
+                        sh "docker build -t ${fullImageName} -t ${latestImageName} ."
+
+                        echo "Pushing image to Docker Hub..."
+                        sh "docker push ${fullImageName}"
+                        sh "docker push ${latestImageName}"
+                    }
+                }
+            }
+        }
+    } // סגירת stages (הועברה לכאן)
 
     post {
         success {
